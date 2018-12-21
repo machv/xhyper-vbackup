@@ -82,7 +82,7 @@ function Convert-VmBackupCheckpoint
     $Msvm_VirtualSystemSnapshotService = Get-WmiObject -Namespace root\virtualization\v2 -Class Msvm_VirtualSystemSnapshotService
 
     # Convert the snapshot to a reference point, this function returns a job object.
-    $job = $Msvm_VirtualSystemSnapshotService.ConvertToReferencePoint($BackupSnapshot)
+    $job = $Msvm_VirtualSystemSnapshotService.ConvertToReferencePoint($BackupCheckpoint)
 
     # Wait for the job to complete.
     ($job | ProcessWMIJob -WmiClass $Msvm_VirtualSystemSnapshotService -MethodName "ConvertToReferencePoint") | Out-Null
@@ -144,20 +144,20 @@ function Export-VMBackupCheckpoint
 
         #   SnapshotVirtualSystem
         #      Path to a Msvm_VirtualSystemSettingData instance that represents the snapshot to be exported with the VM.
-        $Msvm_VirtualSystemExportSettingData.SnapshotVirtualSystem = $BackupSnapshot
+        $Msvm_VirtualSystemExportSettingData.SnapshotVirtualSystem = $BackupCheckpoint
 
         #   DifferentialBase
         #      Base for differential export. This is either path to a Msvm_VirtualSystemReferencePoint instance that
         #         represents the reference point or path to a Msvm_VirtualSystemSettingData instance that
         #         represents the snapshot to be used as a base for differential export. If the CopySnapshotConfiguration
         #         property is not set to 3(ExportOneSnapshotUseVmId), this property is ignored."
-        $Msvm_VirtualSystemExportSettingData.DifferentialBase = $ReferenceSnapshot
+        $Msvm_VirtualSystemExportSettingData.DifferentialBackupBase = $ReferencePoint
 
         #   StorageConfiguration
         #      Indicates what should be the VHD path in the exported configuration.
         #        0: StorageConfigurationCurrent - The exported configuration would point to the current VHD.
         #        1: StorageConfigurationBaseVhd - The exported configuration would point to the base VHD.
-        $Msvm_VirtualSystemExportSettingData.StorageConfiguration = 1
+        #$Msvm_VirtualSystemExportSettingData.StorageConfiguration = 1
 
     #Export the virtual machine snapshot, this method returns a job object.
     $job = $Msvm_VirtualSystemManagementService.ExportSystemDefinition($Msvm_ComputerSystem, $DestinationPath, $Msvm_VirtualSystemExportSettingData.GetText(1))
