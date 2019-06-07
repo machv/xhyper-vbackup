@@ -293,7 +293,7 @@ function Remove-VmReferencePoint
     $Msvm_VirtualSystemReferencePointService = Get-WmiObject -Namespace root\virtualization\v2 -Class Msvm_VirtualSystemReferencePointService
 
     # Removes the virtual machine reference, this method returns a job object.
-    $job = $Msvm_VirtualSystemReferencePointService.DestroyReferencePoint($ReferenceSnapshot)
+    $job = $Msvm_VirtualSystemReferencePointService.DestroyReferencePoint($ReferencePoint)
 
     # Waits for the job to complete and processes any errors.
     ($job | ProcessWMIJob -WmiClass $Msvm_VirtualSystemReferencePointService -MethodName "DestroyReferencePoint") | Out-Null
